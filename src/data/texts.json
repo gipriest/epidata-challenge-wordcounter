@@ -1,0 +1,6 @@
+[
+  { "name": "una palabra", "text": "Hola", "words": 1, "characters": 4 },
+  { "name": "frase simple", "text": "Hola mundo", "words": 2, "characters": 10 },
+  { "name": "con puntuación", "text": "Hola mundo. Esto es una prueba.", "words": 6, "characters": 31 },
+  { "name": "espacios múltiples", "text": "uno   dos    tres", "words": 3, "characters": 17 }
+]
