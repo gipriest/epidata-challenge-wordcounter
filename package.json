@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "Framework de pruebas E2E con Playwright + TypeScript para wordcounter.net",
   "scripts": {
-    "test": "playwright test",
+    "test": "playwright test --project=api --project=chromium",
+    "test:all": "playwright test",
+    "test:stable": "playwright test --project=api --project=chromium --grep-invert @defect",
+    "test:defects": "playwright test --project=chromium --grep @defect",
     "test:chromium": "playwright test --project=chromium",
     "test:api": "playwright test --project=api",
     "test:headed": "playwright test --project=chromium --headed",

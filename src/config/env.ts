@@ -8,4 +8,6 @@ export const env = {
   BASE_URL: process.env.BASE_URL ?? 'https://wordcounter.net',
   HEADLESS: bool(process.env.HEADLESS, true),
   CI: bool(process.env.CI, false),
+  /** Bloquea publicidad, banner de consentimiento y analytics de terceros. */
+  BLOCK_THIRD_PARTY: bool(process.env.BLOCK_THIRD_PARTY, true),
 } as const;
