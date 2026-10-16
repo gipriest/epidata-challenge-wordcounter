@@ -1,15 +1,23 @@
 import { test, expect } from '../../src/fixtures';
 import { consistencyCases, consistencyDefectCases, keywordCases } from '../../src/data/cases';
 import type { WordCounterPage } from '../../src/pages/WordCounterPage';
+import { allureMeta, Story } from '../../src/utils/allure';
 import { textWithKnownTopKeywords } from '../../src/utils/text';
+
+const FEATURE = 'Keyword Density';
 
 test.describe('Keyword Density: las 3 palabras más repetidas', () => {
   test('usa la configuración por defecto (modo x1)', async ({ wordCounterPage }) => {
+    await allureMeta(FEATURE, Story.INITIAL_STATE);
     await expect(wordCounterPage.keywordModeX1).toHaveClass(/active_consecutive/);
   });
 
   for (const { name, text, expected } of keywordCases) {
     test(`top 3: ${name}`, async ({ wordCounterPage }) => {
+      await allureMeta(FEATURE, Story.CURATED_CASES, {
+        Texto: text,
+        Esperado: expected.map((k) => `${k.word} (${k.count})`).join(', ') || 'sin keywords',
+      });
       await wordCounterPage.typeText(text);
       await wordCounterPage.expectTopKeywords(expected);
     });
@@ -19,6 +27,7 @@ test.describe('Keyword Density: las 3 palabras más repetidas', () => {
     const seed = Number(process.env.SEED ?? Date.now());
     testInfo.annotations.push({ type: 'seed', description: String(seed) });
     const { text, top, words } = textWithKnownTopKeywords(seed);
+    await allureMeta(FEATURE, Story.VOLUME, { Semilla: seed, Texto: text });
 
     await wordCounterPage.typeText(text);
     await wordCounterPage.expectWordCount(words);
@@ -26,6 +35,7 @@ test.describe('Keyword Density: las 3 palabras más repetidas', () => {
   });
 
   test('se actualiza al editar el texto', async ({ wordCounterPage }) => {
+    await allureMeta(FEATURE, Story.LIVE_UPDATE);
     await wordCounterPage.typeText('apple apple banana cherry');
     await wordCounterPage.expectTopKeywords([
       { word: 'apple', count: 2 },
@@ -42,6 +52,7 @@ test.describe('Keyword Density: las 3 palabras más repetidas', () => {
 
   for (const { name, text } of consistencyCases) {
     test(`coincide con el contador de palabras: ${name}`, async ({ wordCounterPage }) => {
+      await allureMeta(FEATURE, Story.CONSISTENCY, { Texto: text });
       await expectKeywordsMatchWordCount(wordCounterPage, text);
     });
   }
@@ -49,6 +60,7 @@ test.describe('Keyword Density: las 3 palabras más repetidas', () => {
   test.describe('defectos detectados', { tag: '@defect' }, () => {
     for (const { name, text } of consistencyDefectCases) {
       test(`coincide con el contador de palabras: ${name}`, async ({ wordCounterPage }) => {
+        await allureMeta(FEATURE, Story.KNOWN_DEFECTS, { Texto: text });
         await expectKeywordsMatchWordCount(wordCounterPage, text);
       });
     }
@@ -61,11 +73,14 @@ test.describe('Keyword Density: las 3 palabras más repetidas', () => {
  */
 async function expectKeywordsMatchWordCount(wordCounterPage: WordCounterPage, text: string): Promise<void> {
   await wordCounterPage.typeText(text);
-  await expect(wordCounterPage.keywordRows.first()).toBeVisible();
-  const words = await wordCounterPage.getWordCount();
-  await expect
-    .poll(async () => (await wordCounterPage.getKeywords()).reduce((sum, k) => sum + k.count, 0), {
-      message: `La suma de Keyword Density debería ser igual al contador de palabras (${words})`,
-    })
-    .toBe(words);
+
+  await test.step('Verificar que la suma de Keyword Density coincida con el contador de palabras', async () => {
+    await expect(wordCounterPage.keywordRows.first()).toBeVisible();
+    const words = await wordCounterPage.getWordCount();
+    await expect
+      .poll(async () => (await wordCounterPage.getKeywords()).reduce((sum, k) => sum + k.count, 0), {
+        message: `La suma de Keyword Density debería ser igual al contador de palabras (${words})`,
+      })
+      .toBe(words);
+  });
 }

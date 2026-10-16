@@ -3,3 +3,5 @@ playwright-report
 test-results
 package-lock.json
 summary-report
+allure-results
+allure-report

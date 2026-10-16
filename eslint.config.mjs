@@ -3,7 +3,17 @@ import playwright from 'eslint-plugin-playwright';
 import prettier from 'eslint-config-prettier';
 
 export default tseslint.config(
-  { ignores: ['node_modules', 'playwright-report', 'test-results', 'blob-report', 'summary-report'] },
+  {
+    ignores: [
+      'node_modules',
+      'playwright-report',
+      'test-results',
+      'blob-report',
+      'summary-report',
+      'allure-results',
+      'allure-report',
+    ],
+  },
   ...tseslint.configs.recommended,
   {
     files: ['tests/**/*.ts'],
