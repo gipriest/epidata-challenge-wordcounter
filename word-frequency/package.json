@@ -1,0 +1,18 @@
+{
+  "name": "word-frequency",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Ejercicio 4: contador de frecuencia de palabras (Node.js, sin dependencias)",
+  "type": "module",
+  "bin": {
+    "word-frequency": "src/cli.mjs"
+  },
+  "scripts": {
+    "start": "node src/cli.mjs samples/ejemplo.txt",
+    "histogram": "node src/cli.mjs samples/ejemplo.txt --bars",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
